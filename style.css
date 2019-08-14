@@ -1,0 +1,84 @@
+* {
+	margins: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background: #000;
+	font-family: sans-serif;
+	color: #fff;
+}
+
+#root {
+   margin: 0 auto;
+}
+
+#root:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+img{
+  float: left;
+  background: #D26;
+  border: 2px solid #333;
+  margin-bottom: 15px;
+}
+
+.search_bar {
+    width: 80%;
+    margin: 15px auto;
+    display: flex;
+}
+
+input[type="text"] {
+	width: 90%;
+    font-size: 22px;
+    padding: 5px;
+}
+
+#myButton {
+    height: 43px;
+    width: 43px;
+    display: inline-block;
+    border: none;
+    position: relative;
+    top: 0;
+    background-image: linear-gradient(45deg, rgb(153, 51, 255) 0%, rgb(255, 102, 102) 100%);;
+}
+
+#myButton:before {
+    content: '';
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: url(img/icon_white.png) no-repeat center center /contain;
+    z-index: 2;
+}
+
+div#more {
+    display: block;
+    text-align: center;
+}
+
+div#more button {
+    color: #fff;
+    background: linear-gradient(45deg, rgb(153, 51, 255) 0%, rgb(255, 102, 102) 100%);
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+    padding: 20px;
+    z-index: 10;
+    display: inline-block;
+    margin: 20px auto;
+    width: 200px;
+}
+
+
+
+
