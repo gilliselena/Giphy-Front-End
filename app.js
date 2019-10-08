@@ -1,3 +1,8 @@
+//we need to circle througgh reponse and get the tags and the short link for giphy
+//Add it to div: tags in <a> and link in <a>
+//1.Tags that it's using
+//2.copy giphy link
+
 
 // DOM Elements
 let root = document.getElementById('root');
@@ -29,18 +34,72 @@ let reInitLayout = function() {
 	});
 };
 
+let reInitLayoutDiv = function() {
+	var msnry = new Masonry( '#root', {
+	 	horizontalOrder: true,
+	 	gutter: 15,
+		itemSelector: '.popDiv',
+		columnWidth: '.popDiv',
+		percentPosition: true
+	});
+};
+
+
 // Add images from a giphy response to the layout
 let addImagesToLayout = function(response) {
 	for (var i = 0; i < response.data.length; i++) {
 		let img = document.createElement('img');
+		let copyURL = response.data[i].url;
 	 	img.src = response.data[i].images.original.url;
 	 	img.height = response.data[i].images.fixed_width.height; 
 	 	img.width = response.data[i].images.fixed_width.width;
 		root.appendChild(img);
+
+		copyLink(img, copyURL, response);
+	}
+	reInitLayout();
+	reInitLayoutDiv()
+};
+
+// Add Copy Link from a giphy response to the layout
+
+let copyLink = function(img, url, response){
+	let link = document.createElement('a');
+
+ 	let popDiv = document.createElement('div');
+ 	popDiv.className = "popDiv"
+ 	popDiv.style.width = img.width + 'px';
+ 	popDiv.style.height = img.height + 'px';
+	console.log(popDiv);
+
+	let copyURL = url;
+	let urlBtn = document.createElement('a');
+	urlBtn.className = 'copyLink';
+ 	urlBtn.innerHTML = 'Copy link';
+ 	urlBtn.href = copyURL;
+
+	let input = document.createElement('input');
+	input.id = 'inputLink'
+ 	input.type = 'text';
+	input.value = copyURL;
+
+	popDiv.appendChild(input);
+ 	popDiv.appendChild(urlBtn);
+ 	root.appendChild(link);
+	link.appendChild(img);
+	link.appendChild(popDiv);
+
+	let copy = function(){
+		event.preventDefault();
+		input.select(); 
+		document.execCommand("copy");
+		urlBtn.innerHTML = "Linked Copied"
 	}
 
-	reInitLayout();
-};
+	
+	urlBtn.addEventListener("click", copy);
+	
+}
 
 // Search Event Handler
 let searchEventHandler = function() {
@@ -56,7 +115,8 @@ let searchEventHandler = function() {
 		more.addEventListener('click', showMoreEventHandler);
 	};
 	
-	request(responseHandler, search.value, giphyNumberPerPage, offset);
+	request(responseHandler, 'search', search.value, giphyNumberPerPage, offset);
+
 };
 
 // Show More Event Handler
@@ -67,8 +127,9 @@ let showMoreEventHandler = function() {
 		addImagesToLayout(response);
 	};
 	
-	request(responseHandler, search.value, giphyNumberPerPage, offset);
+	request(responseHandler, 'search', search.value, giphyNumberPerPage, offset);
 };
+
 
 // Attach search event handler to search button
 myButton.addEventListener('click', searchEventHandler);
@@ -76,9 +137,11 @@ myButton.addEventListener('click', searchEventHandler);
 // Handle pressing Enter in search query text field
 search.addEventListener("keydown", event => {
   if (event.isComposing || event.keyCode === 13) {
+  	console.log('enter');
   	searchEventHandler();
   }
 });
+
 
 // Event handler for window resizing
 function resizeWindow(){
@@ -98,6 +161,8 @@ function resizeWindow(){
 	}
 }
 
+
+
 // Handle window resizing event
 window.addEventListener('resize', resizeWindow);
 
@@ -105,12 +170,12 @@ window.addEventListener('resize', resizeWindow);
 resizeWindow();
 
 // Giphy API request function
-function request(callbackFn, searchQuery='', limit=25, offset=0){
+function request(callbackFn, endpoint, searchQuery='', limit=25, offset=0){
 	// Create a request variable and assign a new XMLHttpRequest object to it.
 	var request = new XMLHttpRequest();
 	
 	// Open a new connection, using the GET request on the search endpoint of Giphy's API
-	request.open(`GET`, `http://api.giphy.com/v1/gifs/search?api_key=${api.key}&q=${searchQuery}&limit=${limit}&offset=${offset}`, true);
+	request.open(`GET`, `http://api.giphy.com/v1/gifs/${endpoint}?api_key=${api.key}&q=${searchQuery}&limit=${limit}&offset=${offset}`, true);
 	
 	request.onload = function() {
 		callbackFn(JSON.parse(this.response));
@@ -118,3 +183,12 @@ function request(callbackFn, searchQuery='', limit=25, offset=0){
 
 	request.send();
 }
+
+function callbackFn(request){
+	addImagesToLayout(request);
+}
+
+request(callbackFn, 'trending', search.value, giphyNumberPerPage, offset);
+
+
+
